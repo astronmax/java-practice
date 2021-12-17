@@ -1,57 +1,127 @@
 package practices.practice_4;
 
-class Test {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-    public static boolean is_palindrome() {
-        String[] true_cases = {"qqaaqq", "aaaaaa", "Hello Olleh", "Madam Im Adam"};
-        String[] false_cases = {"Hello World", "qwertyuiop", "12"};
+enum TEAMS { NA, LEFT, RIGHT };
 
-        for (var str : true_cases) {
-            if (!Utils.is_palindrome(str))
-                return false;
-        }
+class Main extends JFrame {
+    Font defaultFont = new Font("Roboto", Font.PLAIN, 14);
 
-        for (var str : false_cases) {
-            if (Utils.is_palindrome(str))
-                return false;
-        }
-        
-        return true;
+    JButton buttonLeft = new JButton();
+    JButton buttonRight = new JButton();
+    JLabel labelResult = new JLabel();
+    JLabel labelLast = new JLabel();
+    JLabel labelWinner = new JLabel();
+
+    int leftScore = 0;
+    int rightScore = 0;
+    TEAMS lastScore;
+
+    String buttonLeftValue = "AC Milan";
+    String buttonRightValue = "Real Madrid";
+
+    protected String labelResultValue() {
+        return "Result: " + leftScore + " X " + rightScore;
     }
 
-    public static boolean count_sequences() {
-        if (Utils.count_sequences(2, 3) != 5)
-            return false;
-        
-        if (Utils.count_sequences(3, 4) != 7)
-            return false;
-        
-        if (Utils.count_sequences(4, 3) != 0)
-            return false;
-        
-        if (Utils.count_sequences(0, 0) != 0)
-            return false;
-        
-        return true;
+    protected String labelLastValue() {
+        return "Last Scorer: " + (lastScore == TEAMS.LEFT ? buttonLeftValue : (lastScore == TEAMS.RIGHT ? buttonRightValue : "N/A"));
     }
 
-    public static boolean reverse_int() {
-        if (Utils.reverse_int(1234) != 4321 || Utils.reverse_int(162935) != 539261)
-            return false;
-        
-        if (Utils.reverse_int(1) != 1 || Utils.reverse_int(9) != 9)
-            return false;
-        
-        return true;
+    protected String labelWinnerValue() {
+        return "Winner: " + (leftScore > rightScore ? buttonLeftValue : (rightScore > leftScore ? buttonRightValue : "DRAW"));
     }
-}
 
-public class Main {
+    protected void updateLabels() {
+        this.labelResult.setText(this.labelResultValue());
+        this.labelLast.setText(this.labelLastValue());
+        this.labelWinner.setText(this.labelWinnerValue());
+    }
+
+    protected void updateTeam(TEAMS team) {
+        if (team == TEAMS.LEFT)
+            ++leftScore;
+        else if (team == TEAMS.RIGHT)
+            ++rightScore;
+
+        lastScore = team;
+
+        updateLabels();
+    }
+
+    Main() {
+        setLayout(new BorderLayout());
+
+        JPanel centerPan = new JPanel();
+        getContentPane().add(centerPan, BorderLayout.CENTER);
+
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        centerPan.setLayout(gridBagLayout);
+
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+
+
+        buttonLeft.setText(buttonLeftValue);
+        buttonLeft.setFont(defaultFont);
+        buttonLeft.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateTeam(TEAMS.LEFT);
+            }
+
+            public void mousePressed(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+        });
+        centerPan.add(buttonLeft, gridBagConstraints);
+
+        buttonRight.setText(buttonRightValue);
+        buttonRight.setFont(defaultFont);
+        buttonRight.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                updateTeam(TEAMS.RIGHT);
+            }
+
+            public void mousePressed(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+        });
+        gridBagConstraints.gridx = 1;
+        centerPan.add(buttonRight, gridBagConstraints);
+
+        labelResult.setFont(defaultFont);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        centerPan.add(labelResult, gridBagConstraints);
+
+        labelLast.setFont(defaultFont);
+        gridBagConstraints.gridx = 1;
+        centerPan.add(labelLast, gridBagConstraints);
+
+        labelWinner.setFont(defaultFont);
+        labelWinner.setHorizontalAlignment(JLabel.CENTER);
+        labelWinner.setForeground(new Color(255, 100, 100));
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth *= 2;
+        centerPan.add(labelWinner, gridBagConstraints);
+
+        updateLabels();
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
+    }
 
     public static void main(String[] args) {
-        if (Test.is_palindrome() && Test.count_sequences())
-            System.out.println("OK");
-        else
-            System.out.println("Error");
+        new Main();
     }
 }
